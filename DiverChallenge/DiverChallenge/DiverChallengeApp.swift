@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct DiverChallengeApp: App {
@@ -13,5 +14,6 @@ struct DiverChallengeApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: [DivingBook.self, DivingDailyLog.self])
     }
 }
