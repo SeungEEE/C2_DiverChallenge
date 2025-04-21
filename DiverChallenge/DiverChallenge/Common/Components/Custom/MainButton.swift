@@ -29,6 +29,7 @@ struct MainButton: View {
                         .fill(buttonType.background)
                 }
         })
+        .disabled(buttonType == .createOff)
     }
     
     enum ButtonType {
@@ -59,5 +60,5 @@ struct MainButton: View {
 }
 
 #Preview {
-    MainButton(buttonType: .createOn, action: { print("메인 버튼")})
+    MainButton(buttonType: .createOff, action: { print("메인 버튼")})
 }
