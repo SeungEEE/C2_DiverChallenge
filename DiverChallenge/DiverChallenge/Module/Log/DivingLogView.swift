@@ -6,8 +6,11 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct DivingLogView: View {
+    @Bindable var log: DivingDailyLog
+    
     @State private var goal: String = ""
     @State private var word: String = ""
     
@@ -169,6 +172,6 @@ struct DivingLogView: View {
     }
 }
 
-#Preview {
-    DivingLogView()
-}
+//#Preview {
+//    DivingLogView()
+//}
