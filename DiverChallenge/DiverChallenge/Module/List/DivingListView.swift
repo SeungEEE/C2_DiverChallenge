@@ -41,25 +41,8 @@ struct DivingListView: View {
             // 다이빙 리스트
             List {
                 ForEach(book.dailyLogs.sorted(by: { $0.date < $1.date })) { log in
-                    VStack(alignment: .leading, spacing: 10) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text("Day \(dayNumber(for: log))")
-                                    .font(.pretendard(type: .semibold, size: 24))
-                                    .foregroundStyle(.main)
-                                Text(log.todayGoal)
-                                    .font(.pretendard(type: .semibold, size: 16))
-                                    .foregroundStyle(.main)
-                            }
-                            Spacer()
-                            Text(log.todayMood.mood)
-                        }
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(Color.white)
-                                .shadow(color: .gray.opacity(0.1), radius: 2, x: 0, y: 2)
-                        )
+                    NavigationLink(destination: DivingLogView(log: log)) {
+                        logList(for: log)
                     }
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
@@ -72,6 +55,7 @@ struct DivingListView: View {
         .safeAreaPadding(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
     }
     
+    /// 로그 리스트
     private func logList(for log: DivingDailyLog) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -83,7 +67,9 @@ struct DivingListView: View {
                         .font(.pretendard(type: .semibold, size: 16))
                         .foregroundStyle(.main)
                 }
+                
                 Spacer()
+                
                 Text(log.todayMood.mood)
             }
             .padding()
@@ -95,18 +81,21 @@ struct DivingListView: View {
         }
     }
     
+    /// 남은 기간
     var daysRemaining: Int {
         Calendar.current.dateComponents(
             [.day], from: Date(), to: book.endDate)
         .day ?? 0
     }
     
+    /// 기간
     func dayNumber(for log: DivingDailyLog) -> Int {
         Calendar.current.dateComponents(
             [.day], from: book.startDate, to: log.date)
         .day.map { $0 + 1 } ?? 1
     }
     
+    /// 삭제를 위한 함수
     func deleteLog(at offsets: IndexSet) {
         for index in offsets {
             let log = book.dailyLogs.sorted(by: { $0.date < $1.date })[index]
@@ -117,13 +106,18 @@ struct DivingListView: View {
 }
 
 #Preview {
+    let schema = Schema([DivingBook.self, DivingDailyLog.self])
+    let container = try! ModelContainer(for: schema, configurations: [])
+
+    let context = container.mainContext
+
     let sampleBook = DivingBook(
         title: "Challenge 2",
         goal: "디자인 야무지게 하기",
         startDate: Date(),
         endDate: Calendar.current.date(byAdding: .day, value: 20, to: Date())!
     )
-    
+
     let log1 = DivingDailyLog(
         date: Calendar.current.date(byAdding: .day, value: 0, to: sampleBook.startDate)!,
         todayGoal: "하루 세끼 잘 먹기",
@@ -131,7 +125,7 @@ struct DivingListView: View {
         todayNote: "오늘은 기분이 좋아요!",
         book: sampleBook
     )
-    
+
     let log2 = DivingDailyLog(
         date: Calendar.current.date(byAdding: .day, value: 1, to: sampleBook.startDate)!,
         todayGoal: "포토샵 튜토리얼 끝내기",
@@ -139,8 +133,34 @@ struct DivingListView: View {
         todayNote: "그럭저럭 했음",
         book: sampleBook
     )
-    
+
     sampleBook.dailyLogs = [log1, log2]
-    
+
+    context.insert(sampleBook)
+    context.insert(log1)
+    context.insert(log2)
+
     return DivingListView(book: sampleBook)
+        .modelContainer(container)
 }
+
+//VStack(alignment: .leading, spacing: 10) {
+//    HStack {
+//        VStack(alignment: .leading, spacing: 10) {
+//            Text("Day \(dayNumber(for: log))")
+//                .font(.pretendard(type: .semibold, size: 24))
+//                .foregroundStyle(.main)
+//            Text(log.todayGoal)
+//                .font(.pretendard(type: .semibold, size: 16))
+//                .foregroundStyle(.main)
+//        }
+//        Spacer()
+//        Text(log.todayMood.mood)
+//    }
+//    .padding()
+//    .background(
+//        RoundedRectangle(cornerRadius: 10)
+//            .fill(Color.white)
+//            .shadow(color: .gray.opacity(0.1), radius: 2, x: 0, y: 2)
+//    )
+//}
