@@ -22,7 +22,6 @@ struct DivingLogView: View {
     /// 선택된 아이템 종류를 저장하는 상태 변수
     @State private var newModeType: ModeType
     
-    
     /// 초기 상태로 세팅
     init(log: DivingDailyLog) {
         self._log = Bindable(wrappedValue: log)
