@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 @Model
-class DivingDailyLog {
+class DivingDailyLog: Identifiable, Equatable {
     @Attribute(.unique) var id: UUID = UUID()
     var date: Date
     var createdAt: Date = Date()
@@ -17,10 +17,11 @@ class DivingDailyLog {
     var todayGoal: String    // 오늘 목표
     var todayMoodRaw: String // 오늘 기분
     var todayNote: String?   // 오늘 한마디
+    var isDone: Bool = false // 체크 버튼
 
     @Relationship var book: DivingBook
 
-    // computed property로 enum처럼 다룸
+    /// computed property로 enum처럼 다룸
     var todayMood: ModeType {
         get { ModeType(rawValue: todayMoodRaw) ?? .neutral }
         set { todayMoodRaw = newValue.rawValue }
