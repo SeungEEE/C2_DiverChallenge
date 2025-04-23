@@ -12,7 +12,7 @@ import SwiftData
 struct DiverChallengeApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SplashView()
         }
         .modelContainer(for: [DivingBook.self, DivingDailyLog.self])
     }
