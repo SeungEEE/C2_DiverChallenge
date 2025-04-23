@@ -130,9 +130,6 @@ struct DivingListView: View {
     }
     
     /// 날짜 계산
-//    private var daysRemaining: Int {
-//        Calendar.current.dateComponents([.day], from: Date(), to: book.endDate).day ?? 0
-//    }
     private var daysRemaining: Int {
         let now = Calendar.current.startOfDay(for: Date())
         let end = Calendar.current.startOfDay(for: book.endDate)
@@ -140,9 +137,6 @@ struct DivingListView: View {
     }
     
     /// 디데이
-//    private func dayNumber(for log: DivingDailyLog) -> Int {
-//        Calendar.current.dateComponents([.day], from: book.startDate, to: log.date).day.map { $0 + 1 } ?? 1
-//    }
     private func dayNumber(for log: DivingDailyLog) -> Int {
         let start = Calendar.current.startOfDay(for: book.startDate)
         let logDate = Calendar.current.startOfDay(for: log.date)
