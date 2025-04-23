@@ -9,129 +9,118 @@ import SwiftUI
 import SwiftData
 
 struct DivingListView: View {
+    /// 도감 모델
     let book: DivingBook
+    
+    /// SwiftData 컨텍스트
     @Environment(\.modelContext) private var context
+    
+    /// 네비게이션 back 버튼을 위한 환경 변수
     @Environment(\.dismiss) private var dismiss
     
+    /// 새로운 다이빙 로그 만들 때 필요한 상태 변수
     @State private var selectedLog: DivingDailyLog?
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            
-            // 다이빙 제목
-            Text(book.title)
-                .font(.pretendard(type: .bold, size: 32))
-                .foregroundStyle(.main)
-            
-            // 전체 목표 + 남은 디데이
-            HStack {
-                Label {
-                    Text(book.goal)
-                        .font(.pretendard(type: .semibold, size: 16))
-                } icon: {
-                    Image(systemName: "square.and.pencil")
-                        .foregroundStyle(.main)
-                }
-                
-                Spacer()
-                
-                Text("\(daysRemaining)일 남음")
-                    .font(.pretendard(type: .semibold, size: 16))
-            }
-            
-            // 다이빙 리스트
-            List {
-                ForEach(book.dailyLogs.sorted(by: { $0.date < $1.date })) { log in
-                    NavigationLink(destination: DivingLogView(log: log)) {
-                        logList(for: log)
-                    }
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
-                }
-                
-                .onDelete(perform: deleteLog)
-            }
-            .listStyle(.plain)
-        }
-        .padding(.horizontal, 16)
-        /// 네비게이션
-        .navigationTitle("다이빙 리스트")
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            // 커스텀 back
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .font(.title2)
-                        .foregroundColor(.black)
-                }
-            }
-
-            // + 버튼
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
+        VStack {
+            CustomNavigationBar(
+                title: "다이빙 리스트",
+                rightButtonImage: Image(systemName: "plus"),
+                rightButtonAction: {
                     createNewLog()
-                } label: {
-                    Image(systemName: "plus")
-                        .foregroundStyle(.black)
                 }
+            )
+            
+            VStack(alignment: .leading, spacing: 20) {
+                // 다이빙 제목
+                Text(book.title)
+                    .font(.pretendard(type: .bold, size: 32))
+                    .foregroundStyle(.black)
+                
+                // 전체 목표 + 남은 디데이
+                HStack {
+                    Label {
+                        Text(book.goal)
+                            .font(.pretendard(type: .semibold, size: 16))
+                    } icon: {
+                        Image(systemName: "square.and.pencil")
+                            .foregroundStyle(.main)
+                    }
+                    
+                    Spacer()
+                    
+                    Text("\(daysRemaining)일 남음")
+                        .font(.pretendard(type: .semibold, size: 16))
+                }
+                
+                // 다이빙 리스트
+                List {
+                    ForEach(book.dailyLogs.sorted(by: { $0.date < $1.date })) { log in
+                        NavigationLink(destination: DivingLogView(log: log)) {
+                            logList(for: log)
+                        }
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
+                        .listRowBackground(Color.clear)
+                    }
+                    
+                    .onDelete(perform: deleteLog)
+                }
+                .listStyle(.plain)
             }
-        }
-        .navigationDestination(isPresented: Binding(
-            get: { selectedLog != nil },
-            set: { isActive in if !isActive { selectedLog = nil } }
-        )) {
-            if let selectedLog {
-                DivingLogView(log: selectedLog)
+            .padding(.horizontal, 16)
+            .navigationBarHidden(true)
+            .navigationDestination(item: $selectedLog) { log in
+                DivingLogView(log: log, isNew: true)
             }
         }
     }
     
     /// 로그 리스트 뷰
     private func logList(for log: DivingDailyLog) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
+        let isDone = log.isDone
+        
+        return VStack(alignment: .leading, spacing: 10) {
             HStack {
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Day \(dayNumber(for: log))")
-                        .font(.pretendard(type: .semibold, size: 24))
-                        .foregroundStyle(.main)
+                    HStack {
+                        Text("Day \(dayNumber(for: log))")
+                            .font(.pretendard(type: .semibold, size: 24))
+                            .foregroundStyle(isDone ? .white : .black)
+                        Image(systemName: "checkmark.circle")
+                            .foregroundStyle(isDone ? .white : .clear)
+                    }
                     Text(log.todayGoal)
                         .font(.pretendard(type: .semibold, size: 16))
-                        .foregroundStyle(.main)
+                        .foregroundStyle(isDone ? .white : .black)
                 }
                 
                 Spacer()
                 
                 Text(log.todayMood.mood)
+                    .foregroundStyle(isDone ? .white : .main)
             }
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.white)
+                    .fill(isDone ? Color.main : .white)
                     .shadow(color: .gray.opacity(0.1), radius: 2, x: 0, y: 2)
             )
         }
     }
     
-    // MARK: - 새 로그 생성
+    /// 새 로그 생성
     private func createNewLog() {
-        let newLog = DivingDailyLog(
+        selectedLog = DivingDailyLog(
             date: Date(),
             todayGoal: "",
             todayMood: .neutral,
             todayNote: nil,
             book: book
         )
-        book.dailyLogs.append(newLog)
-        context.insert(newLog)
-        try? context.save()
-        selectedLog = newLog
     }
     
-    // MARK: - 삭제
+    /// 삭제
     private func deleteLog(at offsets: IndexSet) {
         for index in offsets {
             let log = book.dailyLogs.sorted(by: { $0.date < $1.date })[index]
@@ -140,51 +129,66 @@ struct DivingListView: View {
         try? context.save()
     }
     
-    // MARK: - 날짜 계산
+    /// 날짜 계산
+//    private var daysRemaining: Int {
+//        Calendar.current.dateComponents([.day], from: Date(), to: book.endDate).day ?? 0
+//    }
     private var daysRemaining: Int {
-        Calendar.current.dateComponents([.day], from: Date(), to: book.endDate).day ?? 0
+        let now = Calendar.current.startOfDay(for: Date())
+        let end = Calendar.current.startOfDay(for: book.endDate)
+        return Calendar.current.dateComponents([.day], from: now, to: end).day ?? 0
     }
     
+    /// 디데이
+//    private func dayNumber(for log: DivingDailyLog) -> Int {
+//        Calendar.current.dateComponents([.day], from: book.startDate, to: log.date).day.map { $0 + 1 } ?? 1
+//    }
     private func dayNumber(for log: DivingDailyLog) -> Int {
-        Calendar.current.dateComponents([.day], from: book.startDate, to: log.date).day.map { $0 + 1 } ?? 1
+        let start = Calendar.current.startOfDay(for: book.startDate)
+        let logDate = Calendar.current.startOfDay(for: log.date)
+        
+        let diff = Calendar.current.dateComponents([.day], from: start, to: logDate).day ?? 0
+        return diff + 1 // Day 1부터 시작
     }
 }
 
 #Preview {
     let schema = Schema([DivingBook.self, DivingDailyLog.self])
     let container = try! ModelContainer(for: schema, configurations: [])
-    
+
     let context = container.mainContext
-    
-    let sampleBook = DivingBook(
-        title: "Challenge 2",
-        goal: "디자인 야무지게 하기",
+
+    let book = DivingBook(
+        title: "챌린지 예시",
+        goal: "디자인 다듬기",
         startDate: Date(),
-        endDate: Calendar.current.date(byAdding: .day, value: 20, to: Date())!
+        endDate: Calendar.current.date(byAdding: .day, value: 7, to: Date())!
     )
-    
+
     let log1 = DivingDailyLog(
-        date: Calendar.current.date(byAdding: .day, value: 0, to: sampleBook.startDate)!,
-        todayGoal: "하루 세끼 잘 먹기",
+        date: Date(),
+        todayGoal: "버튼 디자인 완성",
         todayMood: .happy,
-        todayNote: "오늘은 기분이 좋아요!",
-        book: sampleBook
+        todayNote: "기분 좋게 마무리",
+        book: book
     )
-    
+
     let log2 = DivingDailyLog(
-        date: Calendar.current.date(byAdding: .day, value: 1, to: sampleBook.startDate)!,
-        todayGoal: "포토샵 튜토리얼 끝내기",
+        date: Calendar.current.date(byAdding: .day, value: 1, to: Date())!,
+        todayGoal: "UI 컴포넌트 정리",
         todayMood: .neutral,
         todayNote: "그럭저럭 했음",
-        book: sampleBook
+        book: book
     )
-    
-    sampleBook.dailyLogs = [log1, log2]
-    
-    context.insert(sampleBook)
+
+    log1.isDone = true
+    book.dailyLogs = [log1, log2]
+
+    context.insert(book)
     context.insert(log1)
     context.insert(log2)
-    
-    return DivingListView(book: sampleBook)
+
+    return DivingListView(book: book)
         .modelContainer(container)
 }
+
