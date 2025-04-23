@@ -17,6 +17,8 @@ class DivingBook {
     var endDate: Date              // 종료 날짜
     var createdAt: Date = Date()   // 현재 날짜
     
+    var imageIndex: Int = Int.random(in: 1...6)            // 도감 이미지
+    
     @Relationship(deleteRule: .cascade) var dailyLogs: [DivingDailyLog] = []
 
     init(title: String, goal: String, startDate: Date, endDate: Date) {

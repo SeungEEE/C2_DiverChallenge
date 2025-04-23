@@ -8,9 +8,14 @@
 import SwiftUI
 
 struct DivingGridView: View {
+    
+    /// 도감 리스트
     var books: [DivingBook]
+    
+    /// SwiftData 컨텍스트
     @Environment(\.modelContext) private var context
     
+    /// 2열 그리드 -> 20: 열간격
     let columns = [
         GridItem(.flexible(), spacing: 20),
         GridItem(.flexible(), spacing: 20)
@@ -21,8 +26,10 @@ struct DivingGridView: View {
             LazyVGrid(columns: columns, spacing: 24) {
                 ForEach(Array(books.enumerated()), id: \.element.id) { (index, book) in
                     NavigationLink {
+                        // 카드 터치시 이동
                         DivingListView(book: book)
                     } label: {
+                        // 커스텀 카드 뷰
                         DivingCardView(book: book, index: index)
                             .contextMenu {
                                 Button(role: .destructive) {
@@ -44,8 +51,10 @@ struct DivingGridView: View {
     
     /// 도감을 삭제하기 위한 함수
     private func deleteBook(_ book: DivingBook) {
-        context.delete(book)
-        try? context.save()
+        if let target = books.first(where: { $0.id == book.id }) {
+            context.delete(target)
+            try? context.save()
+        }
     }
 }
 
