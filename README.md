@@ -37,14 +37,17 @@
 
 
 ## 📱 소개
-
-> 프로젝트의 주요 목적과 사용자가 얻게 될 경험을 설명해주세요.
+> Diver Challenge는 사용자가 하나의 장기 목표(챌린지)를 설정하고,
+그 목표를 달성하기 위한 하루 단위의 목표, 다짐, 감정 상태를 기록하는 루틴 기반 자기 관리 앱입니다.
+간단한 입력으로도 꾸준한 자기 성찰과 동기 부여를 가능하게 하며,
+기록 데이터를 바탕으로 사용자 맞춤형 리포트 및 습관 형성을 유도합니다.
+자기계발, 멘탈케어, 루틴 추적 시장을 겨냥한 새로운 일상 기록 플랫폼입니다.
 
 <br>
 
 ## 📆 프로젝트 기간
-- 전체 기간: `YYYY.MM.DD - YYYY.MM.DD`
-- 개발 기간: `YYYY.MM.DD - YYYY.MM.DD`
+- 전체 기간: `2025.04.07 - 2025.04.25`
+- 개발 기간: `2025.04.18 - 2025.04.25`
 
 <br>
 
@@ -60,7 +63,6 @@ Swift 6.0
 ## ⚒️ 개발 환경
 * Front : SwiftUI
 * 버전 및 이슈 관리 : Github, Github Issues
-* 협업 툴 : Discord, Notion
 
 <br>
 
@@ -81,17 +83,8 @@ Swift 6.0
 <br>
 
 ## 📱 화면 구성
-<table>
-  <tr>
-    <td>
-      사진 넣어주세요
-    </td>
-    <td>
-      사진 넣어주세요
-    </td>
-   
-  </tr>
-</table>
+<img width="1013" alt="스크린샷 2025-04-24 오후 3 45 15" src="https://github.com/user-attachments/assets/071a1c4a-c7fd-4cf5-8f5d-db57762a8d32" />
+
 
 ## 🔖 브랜치 컨벤션
 * `main` - 제품 출시 브랜치
@@ -101,7 +94,7 @@ Swift 6.0
 * `hotfix/xx` - 출시 버전에서 발생한 버그를 수정하는 브랜치
 * `chore/xx` - 빌드 작업, 패키지 매니저 설정 등
 * `design/xx` - 디자인 변경
-* `bugfix/xx` - 디자인 변경
+* `bugfix/xx` - 버그 수정하는 브랜치
 
 
 
@@ -165,9 +158,6 @@ if let user = self.veryLongFunctionNameWhichReturnsOptionalUser(),
 | 🔧| wrench | 구성 파일 추가/삭제 | Add or update configuration files.|
 | ⚡️ | zap | 성능 개선 | Improve performance |
 | 🎨 | art | 코드 구조 개선 | Improve structure / format of the code |
-| 📦 | package | 컴파일된 파일 추가/수정 | Add or update compiled files |
-| 👽 | alien | 외부 API 변경 반영 | Update code due to external API changes |
-| 🚚 | truck | 리소스 이동, 이름 변경 | Move or rename resources |
 | 🙈 | see_no_evil | .gitignore 추가/수정 | Add or update a .gitignore file |
 
 
@@ -176,4 +166,42 @@ if let user = self.veryLongFunctionNameWhichReturnsOptionalUser(),
 
 ## 🗂️ 폴더 컨벤션
 ```
+Sources/
+├── App/ # 앱의 진입점 및 생명주기
+│ ├── DiverChallengeApp.swift # @main 진입점
+│ └── ContentView.swift # 루트 뷰
+├── Core/ # 앱의 기본 구성요소
+│ └── Extensions/ # Swift 확장 기능
+│   ├── HideKeyboard.swift
+│   └── RoundedCorner.swift
+├── Data/ # 데이터 계층
+│ ├── Models/ # 도메인 모델 (Entity)
+│ ├── DivingBook.swift
+│ ├── DivingDailyLog.swift
+│ └── Emotion.swift
+├── Presentation/ # UI 계층
+│ ├── Navigation/ # 커스텀 네비게이션 바
+│ │ └── CustomNavigationBar.swift
+│ ├── Components/ # 공통 UI 컴포넌트
+│ │ └── MainButton.swift
+│ └── Screens/ # 기능별 화면 구성
+│   ├── BookFeature/ # 도감 관련 화면
+│   │ ├── HomeView.swift
+│   │ ├── CreateDivingView.swift
+│   │ └── DivingCardView.swift
+│   ├── ListFeature/ # 일지 리스트
+│   │ └── DivingListView.swift
+│   ├── LogFeature/ # 개별 일지 상세
+│   │ └── DivingLogView.swift
+│   └── SplashFeature/ # 앱 시작 스플래시
+│     └── SplashView.swift
+├── Resources/ # 폰트, 컬러, 에셋 등 정적 리소스
+│ ├── Asset/ # Xcode Assets
+│ │ └── Assets.xcassets
+│ └── Fonts/ # Pretendard 커스텀 폰트
+│   ├── Pretendard-Bold.ttf
+│   ├── Pretendard-Medium.ttf
+│   ├── Pretendard-Regular.ttf
+│   └── Font+.swift
+└── PreviewContent/ # SwiftUI Preview 리소스
 ```
