@@ -38,7 +38,7 @@ jobs:
         run: |
           set -eo pipefail
           xcodebuild \
-            -project "DiverChallenge.xcodeproj" \
+            -project "/Users/ian/Desktop/Project/Github/C2_DiverChallenge/DiverChallenge/DiverChallenge.xcodeproj" \
             -scheme "DiverChallenge" \
             -configuration Debug \
             -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
