@@ -1,0 +1,51 @@
+# This workflow will build a Swift project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-swift
+
+name: iOS CI
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  build-and-test:
+    runs-on: macos-14
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.4'   # 프로젝트에 맞춰 고정 권장
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Install gems
+        run: bundle install
+
+      # (디버그용) 사용 가능한 시뮬레이터 목록
+      - name: List simulators
+        run: xcrun simctl list devices available
+
+      - name: Build & Test (Simulator)
+        env:
+          CI: 1
+        run: |
+          set -eo pipefail
+          xcodebuild \
+            -project "DiverChallenge.xcodeproj" \
+            -scheme "DiverChallenge" \
+            -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -enableCodeCoverage YES \
+            -resultBundlePath TestResults.xcresult \
+            clean test
