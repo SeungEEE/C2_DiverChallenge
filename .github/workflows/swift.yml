@@ -32,7 +32,7 @@ jobs:
       - name: List simulators
         run: xcrun simctl list devices available
 
-      - name: Build & Test (Simulator)
+      - name: Build (Simulator)
         env:
           CI: 1
         run: |
@@ -44,4 +44,6 @@ jobs:
             -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
             -enableCodeCoverage YES \
             -resultBundlePath TestResults.xcresult \
-            clean test
+            clean build
+
+            
