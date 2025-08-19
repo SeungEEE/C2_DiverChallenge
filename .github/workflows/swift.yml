@@ -38,11 +38,10 @@ jobs:
         run: |
           set -eo pipefail
           xcodebuild \
-            -project DiverChallenge/DiverChallenge.xcodeproj \
+            -project "DiverChallenge/DiverChallenge.xcodeproj" \
             -scheme "DiverChallenge" \
             -configuration Debug \
             -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
-            -enableCodeCoverage YES \
             -resultBundlePath TestResults.xcresult \
             clean build
 
